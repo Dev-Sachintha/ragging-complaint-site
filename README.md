@@ -8,12 +8,11 @@ This project is a secure, web-based system designed to empower students to repor
 
 ## 📹 Demo Video (Optional)
 
-<!--
-(If you create a demo video, embed it or link it here)
-Example:
-[![Watch the Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
--->
-*A brief video showcasing the website's features and usage will be added here.*
+
+
+https://github.com/user-attachments/assets/bfbde8fb-7820-4ed0-bf97-bbb61ccba276
+
+
 
 ---
 
