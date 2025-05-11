@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File a Ragging Complaint - University Anti-Ragging Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css"> <!-- Link to your custom CSS -->
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger fixed-top shadow-sm">
+         <div class="container">
+            <a class="navbar-brand" href="index.html">Anti-Ragging Portal</a>
+             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                 <span class="navbar-toggler-icon"></span>
+             </button>
+             <div class="collapse navbar-collapse" id="navbarNav">
+                 <ul class="navbar-nav ms-auto">
+                     <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                     <li class="nav-item"><a class="nav-link active" aria-current="page" href="complaint.html">File Complaint</a></li>
+                     <li class="nav-item"><a class="nav-link" href="about.html">About & Help</a></li>
+                     <li class="nav-item"><a class="nav-link" href="login.php">Admin Login</a></li>
+                 </ul>
+             </div>
+         </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-4">
+        <h2 class="mb-3">File a Ragging Complaint</h2>
+        <p class="lead mb-4">Please provide as much detail as possible. Your report can be submitted anonymously, but providing contact details allows the committee to follow up if needed and provide you with status updates.</p>
+
+        <!-- Alert placeholder for messages (useful if using AJAX later) -->
+        <div id="alert-placeholder">
+          <?php
+            // Display error message passed via GET from submitComplaint.php redirect
+            if (isset($_GET['error'])):
+          ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?php echo htmlspecialchars($_GET['error']); // Sanitize output ?>
+                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+          <?php
+            endif;
+          ?>
+        </div>
+
+        <!-- Complaint Form -->
+        <form id="complaintForm" action="api/submitComplaint.php" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <!-- Anonymous Submission Checkbox -->
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="anonymousCheck" name="is_anonymous" value="1">
+                <label class="form-check-label" for="anonymousCheck">Submit Anonymously (Your Name and Contact will not be recorded or required)</label>
+            </div>
+
+            <!-- Personal Details (Optional) -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="fullName" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="fullName" name="full_name" autocomplete="name">
+                    <div class="form-text">Optional unless anonymity is unchecked.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="contactInfo" class="form-label">Email or Phone (for Status Updates)</label>
+                    <input type="text" class="form-control" id="contactInfo" name="contact_info" placeholder="Enter email OR phone in E.164 format (e.g., +1234567890)" autocomplete="tel">
+                    <div class="form-text">Optional, but required for status updates via email or SMS if not anonymous.</div>
+                     <!-- Basic pattern for E.164 or email - can be enhanced -->
+                     <!-- <input type="text" pattern="^\+[1-9]\d{1,14}$|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" class="form-control" id="contactInfo" name="contact_info" placeholder="Email or E.164 Phone (+1...)" autocomplete="tel"> -->
+                     <div class="invalid-feedback">Please enter a valid email or phone number in E.164 format (e.g., +1234567890).</div>
+                </div>
+            </div>
+
+            <!-- Academic Details (Required) -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="department" class="form-label">Department / Faculty <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="department" name="department" required>
+                    <div class="invalid-feedback">Please enter your department or faculty.</div>
+                </div>
+                 <div class="col-md-6">
+                    <label for="yearSemester" class="form-label">Year / Semester <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="yearSemester" name="year_semester" required>
+                    <div class="invalid-feedback">Please enter your year or semester.</div>
+                </div>
+            </div>
+
+            <!-- Incident Details (Required) -->
+            <div class="row mb-3">
+                 <div class="col-md-6">
+                    <label for="incidentDate" class="form-label">Date and Time of Incident <span class="text-danger">*</span></label>
+                    <input type="datetime-local" class="form-control" id="incidentDate" name="incident_datetime" required max="<?php echo date('Y-m-d\TH:i'); ?>"> <!-- Prevent future dates -->
+                    <div class="invalid-feedback">Please select the date and time of the incident.</div>
+                </div>
+                 <div class="col-md-6">
+                    <label for="location" class="form-label">Location of Incident <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="location" name="location" required>
+                    <div class="invalid-feedback">Please specify the location where the incident occurred.</div>
+                </div>
+            </div>
+
+            <!-- Description (Required) -->
+            <div class="mb-3">
+                <label for="description" class="form-label">Description of Incident <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="description" name="description" rows="6" required placeholder="Describe the incident in detail, including who was involved (if known), what happened, any witnesses, etc."></textarea>
+                <div class="invalid-feedback">Please provide a description of the incident.</div>
+            </div>
+
+            <!-- Evidence Upload (Optional) -->
+            <div class="mb-4">
+                <label for="evidence" class="form-label">Upload Evidence (Optional)</label>
+                <input class="form-control" type="file" id="evidence" name="evidence" accept=".jpg, .jpeg, .png, .gif, .pdf, .mp3, .wav, .mp4, .mov, .avi"> <!-- Specify accepted types -->
+                <small class="form-text text-muted">Max file size: 5MB. Allowed types: Images (jpg, png, gif), PDF, Audio (mp3, wav), Video (mp4, mov, avi).</small>
+            </div>
+
+             <!-- Placeholder for Captcha (Implement with a service like Google reCAPTCHA) -->
+             <!-- <div class="mb-3 g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div> -->
+
+            <!-- Form Buttons -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                 <button type="submit" class="btn btn-danger btn-lg">Submit Complaint</button>
+                 <button type="reset" class="btn btn-secondary btn-lg">Reset Form</button>
+            </div>
+        </form>
+    </main>
+      <!-- Chat Assistant Widget -->
+<div id="chat-widget" style="position: fixed; bottom: 20px; right: 20px; width: 300px; max-height: 400px; border: 1px solid #ccc; border-radius: 8px; background-color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; flex-direction: column; z-index: 1000; overflow: hidden;">
+    <div id="chat-header" style="background-color: #dc3545; color: white; padding: 10px; font-weight: bold; cursor: pointer; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+        Chat Assistant <span id="chat-toggle" style="float: right;">[-]</span>
+    </div>
+    <div id="chat-body" style="display: flex; flex-direction: column; height: 350px;">
+        <div id="chat-messages" style="flex-grow: 1; padding: 10px; overflow-y: auto; border-bottom: 1px solid #eee;">
+            <!-- Messages will appear here -->
+            <div class="message assistant">Hello! How can I help you regarding ragging or this portal?</div>
+        </div>
+        <div id="chat-input-area" style="display: flex; padding: 10px; border-top: 1px solid #eee;">
+            <input type="text" id="chat-input" placeholder="Ask a question..." style="flex-grow: 1; border: 1px solid #ccc; border-radius: 4px; padding: 8px; margin-right: 5px;">
+            <button id="chat-send" class="btn btn-danger btn-sm">Send</button>
+        </div>
+    </div>
+</div>
+<!-- End Chat Assistant Widget -->
+     <!-- Footer -->
+     <footer class="text-center mt-5 py-3 bg-light border-top">
+         <p class="mb-0">© <?php echo date("Y"); ?> University Name. All rights reserved.</p>
+     </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS for form interactions -->
+    <script src="js/main.js"></script>
+     <!-- Optional: Add Google reCAPTCHA script if using -->
+     <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
+
+     <!-- Simple Bootstrap 5 Form Validation Script -->
+     <script>
+       // Example starter JavaScript for disabling form submissions if there are invalid fields
+       (() => {
+         'use strict'
+
+         // Fetch all the forms we want to apply custom Bootstrap validation styles to
+         const forms = document.querySelectorAll('.needs-validation')
+
+         // Loop over them and prevent submission
+         Array.from(forms).forEach(form => {
+           form.addEventListener('submit', event => {
+             if (!form.checkValidity()) {
+               event.preventDefault()
+               event.stopPropagation()
+             }
+
+             form.classList.add('was-validated')
+           }, false)
+         })
+       })()
+     </script>
+</body>
+</html>
